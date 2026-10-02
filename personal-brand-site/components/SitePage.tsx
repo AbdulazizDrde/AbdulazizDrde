@@ -1,127 +1,185 @@
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, Languages, Menu, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowUpLeft,
+  ArrowUpRight,
+  Cpu,
+  Languages,
+  Menu,
+  Sparkles,
+  Workflow,
+  X,
+} from 'lucide-react';
 
-type PageKey = 'home' | 'work' | 'writing' | 'field-notes' | 'lab' | 'frameworks' | 'about';
-type Locale = 'en' | 'ar';
+type PageKey =
+  | 'home'
+  | 'work'
+  | 'writing'
+  | 'field-notes'
+  | 'lab'
+  | 'frameworks'
+  | 'about';
+type Locale = 'ar' | 'en';
 
-const routes: Record<PageKey, string> = {
-  home: '/', work: '/work/', writing: '/writing/', 'field-notes': '/field-notes/', lab: '/lab/', frameworks: '/frameworks/', about: '/about/'
-};
-
-const nav: Record<Locale, Record<PageKey, string>> = {
-  en: { home: 'Home', work: 'Work', writing: 'Writing', 'field-notes': 'Field Notes', lab: 'Lab', frameworks: 'Frameworks', about: 'About' },
-  ar: { home: 'الرئيسية', work: 'الأعمال', writing: 'الكتابة', 'field-notes': 'ملاحظات ميدانية', lab: 'المختبر', frameworks: 'الأطر', about: 'عني' }
-};
-
-const work = {
-  en: [
-    ['Village Market — Digital Commerce & Operations Transformation', 'Building the operating model, cross-functional workflows, digital systems, fulfillment routines, customer operations, and performance discipline behind a growing digital commerce operation.', ['BUILT','OPERATED','MEASURED']],
-    ['VPick — Store Operations System', 'Turning fragmented fulfillment and delivery workflows into a structured operating system with assignment, visibility, monitoring, exception handling, and operational control.', ['BUILT','TESTED','OPERATED']],
-    ['Digital Loyalty Infrastructure', 'Designing a practical loyalty layer around customer identity, digital passes, points, operational adoption, and future system integrations.', ['BUILT','TESTED']]
-  ],
+const projects = {
   ar: [
-    ['Village Market — تحول التجارة الرقمية والعمليات', 'بناء نموذج التشغيل وسير العمل متعدد الوظائف والأنظمة الرقمية والتجهيز وخدمة العميل وانضباط الأداء خلف عملية تجارة رقمية نامية.', ['BUILT','OPERATED','MEASURED']],
-    ['VPick — نظام عمليات المتجر', 'تحويل التجهيز والتوصيل من إجراءات متفرقة إلى نظام تشغيل منظم يشمل الإسناد والرؤية والمتابعة ومعالجة الاستثناءات والتحكم التشغيلي.', ['BUILT','TESTED','OPERATED']],
-    ['البنية الرقمية للولاء', 'تصميم طبقة ولاء عملية تربط هوية العميل والبطاقة الرقمية والنقاط والتبني التشغيلي والتكاملات المستقبلية.', ['BUILT','TESTED']]
-  ]
+    {
+      no: '01',
+      title: 'Village Market',
+      subtitle: 'تحول التجارة الرقمية والعمليات',
+      body: 'بناء نموذج تشغيل رقمي يربط الفريق والطلبات والتجهيز والتوصيل وتجربة العميل والبيانات ضمن منظومة واحدة قابلة للقياس والتطوير.',
+      tags: ['Digital Transformation', 'Operations', 'Commerce'],
+      visual: 'commerce',
+    },
+    {
+      no: '02',
+      title: 'VPick',
+      subtitle: 'نظام عمليات المتجر',
+      body: 'تحويل إجراءات التجهيز والتوصيل المتفرقة إلى نظام تشغيلي يركز على الإسناد والمتابعة والاستثناءات والرؤية التشغيلية.',
+      tags: ['Internal Product', 'Fulfillment', 'Automation'],
+      visual: 'vpick',
+    },
+    {
+      no: '03',
+      title: 'Digital Loyalty',
+      subtitle: 'بنية ولاء رقمية',
+      body: 'تصميم تجربة تربط هوية العميل والبطاقة الرقمية والنقاط والتشغيل، مع بنية قابلة للتوسع والتكامل مستقبلًا.',
+      tags: ['Loyalty', 'Customer Systems', 'Integration'],
+      visual: 'loyalty',
+    },
+  ],
+  en: [
+    {
+      no: '01',
+      title: 'Village Market',
+      subtitle: 'Digital Commerce & Operations Transformation',
+      body: 'Building a digital operating model that connects teams, orders, fulfillment, delivery, customer experience, and data into one measurable system.',
+      tags: ['Digital Transformation', 'Operations', 'Commerce'],
+      visual: 'commerce',
+    },
+    {
+      no: '02',
+      title: 'VPick',
+      subtitle: 'Store Operations System',
+      body: 'Turning fragmented fulfillment and delivery routines into a structured operating system focused on assignment, visibility, exceptions, and control.',
+      tags: ['Internal Product', 'Fulfillment', 'Automation'],
+      visual: 'vpick',
+    },
+    {
+      no: '03',
+      title: 'Digital Loyalty',
+      subtitle: 'Digital Loyalty Infrastructure',
+      body: 'Designing a loyalty experience that connects customer identity, digital passes, points, operations, and future system integrations.',
+      tags: ['Loyalty', 'Customer Systems', 'Integration'],
+      visual: 'loyalty',
+    },
+  ],
 };
 
-const territories = {
-  en: [
-    ['01','Digital Operations','Workflows, fulfillment, SLA, process design, operating models, customer operations, and operational control.'],
-    ['02','AI & Automation at Work','Agents, automation, decision support, human-in-the-loop systems, and practical AI inside real operations.'],
-    ['03','Digital Systems & Products','Internal tools, product thinking, system design, interfaces, integration, and build-vs-buy decisions.'],
-    ['04','Commerce as a Living Lab','Retail, e-commerce, customer experience, delivery, loyalty, and data as a real-world laboratory for systems thinking.']
-  ],
+const expertise = {
   ar: [
-    ['01','العمليات الرقمية','سير العمل والتجهيز وSLA وتصميم العمليات ونماذج التشغيل وعمليات العميل والتحكم التشغيلي.'],
-    ['02','الذكاء الاصطناعي والأتمتة في العمل','الوكلاء والأتمتة ودعم القرار والإنسان داخل الحلقة وتطبيقات الذكاء الاصطناعي في العمليات الفعلية.'],
-    ['03','الأنظمة والمنتجات الرقمية','الأدوات الداخلية وتفكير المنتج وتصميم الأنظمة والواجهات والتكامل وقرارات البناء مقابل الشراء.'],
-    ['04','التجارة كمختبر حي','التجزئة والتجارة الإلكترونية وتجربة العميل والتوصيل والولاء والبيانات كمختبر واقعي للتفكير بالأنظمة.']
-  ]
+    ['01', 'التحول الرقمي والعمليات', 'أحوّل الأدوات والإجراءات المتفرقة إلى نماذج تشغيل رقمية واضحة، قابلة للقياس والتحسين والتوسع.', Workflow],
+    ['02', 'الأنظمة والمنتجات الرقمية', 'أبني وأطوّر أدوات داخلية ومنتجات رقمية تبدأ من مشكلة تشغيلية حقيقية، لا من ميزة تبحث عن استخدام.', Cpu],
+    ['03', 'AI والأتمتة في العمل', 'أستخدم الذكاء الاصطناعي والأتمتة داخل العمليات والقرار والتوثيق، مع إبقاء الإنسان حيث تكون مسؤوليته ضرورية.', Sparkles],
+  ],
+  en: [
+    ['01', 'Digital Transformation & Operations', 'I turn fragmented tools and workflows into digital operating models that can be measured, improved, and scaled.', Workflow],
+    ['02', 'Digital Systems & Products', 'I build internal tools and digital products that start with a real operating problem, not a feature looking for a use case.', Cpu],
+    ['03', 'AI & Automation at Work', 'I use AI and automation inside operations, decisions, and documentation while keeping humans responsible where they matter.', Sparkles],
+  ],
 };
 
-const notes = {
-  en: [
-    ['ESSAY','Technology Is Not Digital Transformation','Editorial thesis'],
-    ['FIELD NOTE','From WhatsApp Orders to Structured Operations','In development'],
-    ['DEEP DIVE','What a Real Delivery SLA Engine Actually Needs','In development'],
-    ['ESSAY','Stop Buying Tools. Start Designing Systems.','In development']
-  ],
+const ideas = {
   ar: [
-    ['مقال','التقنية ليست تحولًا رقميًا','أطروحة تحريرية'],
-    ['ملاحظة ميدانية','من طلبات واتساب إلى عمليات منظمة','قيد التطوير'],
-    ['تحليل معمق','ما الذي يحتاجه محرك SLA فعلي للتوصيل؟','قيد التطوير'],
-    ['مقال','توقف عن شراء الأدوات. ابدأ بتصميم الأنظمة.','قيد التطوير']
-  ]
+    ['ESSAY', 'التقنية ليست تحولًا رقميًا'],
+    ['FIELD NOTE', 'من طلبات واتساب إلى عمليات منظمة'],
+    ['DEEP DIVE', 'ما الذي يحتاجه محرك SLA فعلي للتوصيل؟'],
+  ],
+  en: [
+    ['ESSAY', 'Technology Is Not Digital Transformation'],
+    ['FIELD NOTE', 'From WhatsApp Orders to Structured Operations'],
+    ['DEEP DIVE', 'What a Real Delivery SLA Engine Actually Needs'],
+  ],
 };
 
 function Seo({ page, locale }: { page: PageKey; locale: Locale }) {
-  const title = page === 'home' ? 'Abdulaziz Drde — Digital Transformation & Technology Operations' : `${nav[locale][page]} — Abdulaziz Drde`;
-  const description = locale === 'en' ? 'Digital Transformation & Technology Operations. Building digital operating systems at the intersection of technology, operations, data, AI, and business.' : 'عبدالعزيز دردي — التحول الرقمي والعمليات التقنية. بناء أنظمة تشغيل رقمية عند تقاطع التقنية والعمليات والبيانات والذكاء الاصطناعي والأعمال.';
-  const schema = { '@context':'https://schema.org', '@type':'ProfilePage', mainEntity:{ '@type':'Person', name:'Abdulaziz Drde', alternateName:'عبدالعزيز دردي', jobTitle:'Digital Transformation & Technology Operations', description, knowsAbout:['Digital Transformation','Technology Operations','Digital Operations','Artificial Intelligence','Automation','Digital Commerce','Operational Systems'] } };
-  return <Head><title>{title}</title><meta name='description' content={description}/><meta property='og:title' content={title}/><meta property='og:description' content={description}/><meta property='og:type' content='website'/><script type='application/ld+json' dangerouslySetInnerHTML={{__html:JSON.stringify(schema)}}/></Head>;
-}
-
-function WorkCards({ locale }: { locale: Locale }) {
-  return <div className='work-grid'>{work[locale].map((item, i) => <article className='work-card' key={item[0] as string}><div><div className='card-topline'><span className='card-index'>0{i+1}</span><div className='evidence-row'>{(item[2] as string[]).map(label => <span className='evidence' key={label}>{label}</span>)}</div></div><h3>{item[0] as string}</h3><p>{item[1] as string}</p></div></article>)}</div>;
-}
-
-function NoteRows({ locale }: { locale: Locale }) {
-  return <div className='note-list'>{notes[locale].map(item => <div className='note-row' key={item[1]}><div className='type'>{item[0]}</div><h3>{item[1]}</h3><div className='status'>{item[2]}</div></div>)}</div>;
-}
-
-function TerritoryGrid({ locale }: { locale: Locale }) {
-  return <div className='territory-grid'>{territories[locale].map(item => <article className='territory' key={item[0]}><div className='territory-num'>{item[0]}</div><h3>{item[1]}</h3><p>{item[2]}</p></article>)}</div>;
-}
-
-function Shell({ page, locale, setLocale, children }: { page: PageKey; locale: Locale; setLocale: (l: Locale)=>void; children: React.ReactNode }) {
-  const [menuOpen,setMenuOpen] = useState(false);
-  const order: PageKey[] = ['work','writing','field-notes','lab','frameworks','about'];
-  return <div className='site-shell'><header className='site-header'><div className='header-inner'><a className='brand-lockup' href='/'><span className='brand-name'>Abdulaziz Drde</span><span className='brand-mark'/></a><nav className='desktop-nav'>{order.map(item=><a className={`nav-link ${page===item?'active':''}`} href={routes[item]} key={item}>{nav[locale][item]}</a>)}</nav><div className='header-actions'><button className='lang-button' onClick={()=>setLocale(locale==='en'?'ar':'en')}><Languages size={15}/>{locale==='en'?'AR':'EN'}</button><button className='icon-button' onClick={()=>setMenuOpen(!menuOpen)}>{menuOpen?<X size={18}/>:<Menu size={18}/>}</button></div>{menuOpen&&<nav className='mobile-menu'>{order.map(item=><a className='nav-link' href={routes[item]} key={item}>{nav[locale][item]}</a>)}</nav>}</div></header><main>{children}</main><footer className='footer'><div className='container footer-grid'><div className='footer-title'>{locale==='en'?'Building a compounding body of work around digital operations, systems, AI, and business.':'أبني مكتبة معرفية تتراكم حول العمليات الرقمية والأنظمة والذكاء الاصطناعي والأعمال.'}</div><div className='footer-meta'>Abdulaziz Drde · عبدالعزيز دردي<br/>Digital Transformation & Technology Operations</div></div></footer></div>;
-}
-
-function Home({locale}:{locale:Locale}) {
-  const ar=locale==='ar';
-  const signals = ar ? [['النموذج','مشغّل × باني × باحث × كاتب'],['نقطة الاختراق','العمليات الرقمية المدعومة بالذكاء الاصطناعي'],['المختبر التطبيقي','التجارة الرقمية وعمليات التجزئة'],['المنهج','ابنِ ← قِس ← وثّق ← راكم']] : [['MODEL','Operator × Builder × Researcher × Writer'],['BEACHHEAD','AI-Enabled Digital Operations'],['FIELD','Digital Commerce & Retail Operations'],['METHOD','Build → Measure → Document → Compound']];
-  return <><div className='container'><section className='hero'><div><div className='eyebrow'>{ar?'التحول الرقمي والعمليات التقنية':'Digital Transformation & Technology Operations'}</div><h1>{ar?'أنظمة تجعل':'Systems that'}<br/><span className='accent'>{ar?'العمل يعمل.':'make work work.'}</span></h1></div><div className='hero-copy'><p>{ar?'أبني أنظمة تشغيل رقمية تربط التقنية والعمليات والبيانات والذكاء الاصطناعي بنتائج أعمال قابلة للقياس.':'I build digital operating systems that connect technology, operations, data, and AI to measurable business outcomes.'}</p><div className='cta-row'><a className='button primary' href='/work/'>{ar?'استكشف أعمالي':'Explore my work'}<ArrowUpRight size={16}/></a><a className='button secondary' href='/writing/'>{ar?'اقرأ أفكاري':'Read my thinking'}</a></div></div></section></div><div className='signal-strip'><div className='container signal-grid'>{signals.map(([k,v])=><div className='signal' key={k}><span className='signal-kicker'>{k}</span><strong>{v}</strong></div>)}</div></div><section className='section'><div className='container'><div className='section-head'><div className='section-label'>{ar?'أعمال مختارة':'Selected work'}</div><div><h2 className='section-title'>{ar?'الدليل قبل الادعاء.':'Evidence over claims.'}</h2><p className='section-intro'>{ar?'تُعرض الأعمال كأنظمة تشغيل ودراسات حالة، لا كقائمة مسؤوليات. وتبقى المؤشرات التجارية الحساسة خاصة حتى يتم اعتماد نشرها صراحة.':'The work is presented as operating systems and case studies — not as a list of responsibilities. Sensitive commercial metrics stay private until explicitly approved for publication.'}</p></div></div><WorkCards locale={locale}/></div></section><section className='section'><div className='container'><div className='section-head'><div className='section-label'>{ar?'أفكار وكتابة':'Latest thinking'}</div><div><h2 className='section-title'>{ar?'الكتابة من الميدان.':'Writing from the field.'}</h2><p className='section-intro'>{ar?'تخرج الملاحظات والمقالات من مشكلات تشغيلية وقرارات واختبارات ودروس حقيقية، لا من جدول محتوى مصطنع.':'Notes and essays are generated from real operating problems, decisions, tests, and lessons — not from a content calendar.'}</p></div></div><NoteRows locale={locale}/></div></section><section className='section'><div className='container'><div className='section-head'><div className='section-label'>{ar?'المجال الفكري':'Intellectual territory'}</div><div><h2 className='section-title'>{ar?'سؤال واحد، أربع عدسات.':'One question, four lenses.'}</h2><p className='section-intro'>{ar?'كيف نحوّل التقنية والذكاء الاصطناعي إلى أنظمة تشغيل تجعل الأعمال تعمل بصورة أفضل؟':'How do we turn technology and AI into operating systems that make businesses actually work better?'}</p></div></div><TerritoryGrid locale={locale}/></div></section></>;
-}
-
-function PageHero({page,locale}:{page:Exclude<PageKey,'home'>;locale:Locale}) {
-  const ar=locale==='ar';
-  const data: Record<Exclude<PageKey,'home'>,[string,string,string]> = ar ? {
-    work:['الأعمال','أنظمة تشغيل، لا أوصاف وظيفية.','أعمال مختارة في الأنظمة والتحول تُعرض من خلال المشكلة والقرار والتنفيذ والدليل.'],
-    writing:['الكتابة','أفكار تعيش أطول من الخلاصة.','مقالات دائمة القيمة وتحليلات معمقة وبحث موثق حول التقنية والعمليات والذكاء الاصطناعي والأنظمة والأعمال.'],
-    'field-notes':['ملاحظات ميدانية','أوثق العمل وهو ما يزال حيًا.','ملاحظات قصيرة ناتجة عن مشكلات تشغيلية وقرارات واختبارات وواجهات وتصميم عمليات فعلية.'],
-    lab:['المختبر','حيث تُختبر الأنظمة.','نماذج أولية وأدوات داخلية وتدفقات AI وتجارب تشغيلية واستكشافات تقنية.'],
-    frameworks:['الأطر','الأنماط لا تستحق اسمًا قبل الدليل.','تنشأ الأطر من تكرار الحالات: حالات ← أنماط ← إطار ← دليل تطبيقي ← منتج.'],
-    about:['عني','أبني عند تقاطع التقنية والعمليات.','يعمل عبدالعزيز دردي عبر التحول الرقمي والعمليات التقنية وأنظمة التجارة الرقمية والذكاء الاصطناعي والأتمتة والبيانات والمنتجات الداخلية.']
-  } : {
-    work:['Work','Operating systems, not job descriptions.','Selected systems and transformation work shown through problems, decisions, implementation, and evidence.'],
-    writing:['Writing','Ideas that survive the feed.','Evergreen essays, deep dives, and research-backed analysis on technology, operations, AI, systems, and business.'],
-    'field-notes':['Field Notes','Documenting the work while it is still alive.','Short observations from real operating problems, decisions, tests, interfaces, and process design.'],
-    lab:['Lab','Where systems get tested.','Prototypes, internal tools, AI workflows, operational experiments, and technical explorations.'],
-    frameworks:['Frameworks','Patterns earn names only after evidence.','Frameworks emerge from repeated cases: cases → repeated patterns → framework → playbook → product.'],
-    about:['About','Building at the intersection of technology and operations.','Abdulaziz Drde works across digital transformation, technology operations, digital commerce systems, AI, automation, data, and internal products.']
+  const title = page === 'home' ? 'Abdulaziz Drde — Digital Transformation & Technology Operations' : `${page.replace('-', ' ')} — Abdulaziz Drde`;
+  const description = locale === 'ar'
+    ? 'عبدالعزيز دردي — التحول الرقمي والعمليات التقنية. أبني أنظمة رقمية تربط التقنية والعمليات والبيانات والذكاء الاصطناعي بنتائج أعمال قابلة للقياس.'
+    : 'Abdulaziz Drde — Digital Transformation & Technology Operations. Building digital operating systems across technology, operations, data, AI, and business.';
+  const schema = {
+    '@context': 'https://schema.org', '@type': 'ProfilePage',
+    mainEntity: {
+      '@type': 'Person', name: 'Abdulaziz Drde', alternateName: 'عبدالعزيز دردي',
+      jobTitle: 'Digital Transformation & Technology Operations', description,
+      sameAs: ['https://github.com/AbdulazizDrde'],
+      knowsAbout: ['Digital Transformation','Technology Operations','Digital Operations','Artificial Intelligence','Automation','Digital Commerce'],
+    },
   };
-  const [label,title,body]=data[page];
-  return <section className='page-hero'><div className='container'><div className='eyebrow'>{label}</div><h1>{title}</h1><p>{body}</p></div></section>;
+  return <Head><title>{title}</title><meta name="description" content={description}/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:type" content="website"/><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(schema)}}/></Head>;
 }
+
+function Header({ locale, setLocale }: { locale: Locale; setLocale: (locale: Locale) => void }) {
+  const [open, setOpen] = useState(false);
+  const ar = locale === 'ar';
+  return <header className="topbar-wrap"><div className="topbar">
+    <a href="/" className="mini-brand"><span className="avatar-mark">AD</span><span><strong>{ar?'عبدالعزيز دردي':'Abdulaziz Drde'}</strong><small>Digital Systems</small></span></a>
+    <nav className="pill-nav"><a href="/#work">{ar?'أعمالي':'Work'}</a><a href="/#about">{ar?'عني':'About'}</a><a href="/#ideas">{ar?'أفكار':'Ideas'}</a><a href="/lab/">{ar?'المختبر':'Lab'}</a></nav>
+    <div className="top-actions"><button className="lang-pill" onClick={()=>setLocale(ar?'en':'ar')}><Languages size={14}/>{ar?'EN':'ع'}</button><a className="contact-pill" href="https://github.com/AbdulazizDrde" target="_blank" rel="noreferrer">GitHub <ArrowUpRight size={14}/></a><button className="mobile-menu-btn" onClick={()=>setOpen(!open)}>{open?<X size={18}/>:<Menu size={18}/>}</button></div>
+    {open&&<nav className="mobile-popover"><a href="/#work">{ar?'أعمالي':'Work'}</a><a href="/#about">{ar?'عني':'About'}</a><a href="/#ideas">{ar?'أفكار':'Ideas'}</a><a href="/lab/">{ar?'المختبر':'Lab'}</a></nav>}
+  </div></header>;
+}
+
+function ProjectVisual({ type }: { type: string }) {
+  if (type === 'vpick') return <div className="project-visual visual-vpick" aria-hidden="true"><div className="phone phone-a"><div className="phone-top"><span/><span/></div><div className="phone-title"/><div className="task task-active"><b/><span/></div><div className="task"><b/><span/></div><div className="task"><b/><span/></div><div className="phone-action"/></div><div className="phone phone-b"><div className="phone-top"><span/><span/></div><div className="metric-line"><b/><b/><b/></div><div className="map-block"><i/><i/><i/></div><div className="sheet-block"><span/><span/><span/></div></div><div className="floating-chip">Operations OS</div></div>;
+  if (type === 'loyalty') return <div className="project-visual visual-loyalty" aria-hidden="true"><div className="loyalty-card"><div className="loyalty-brand">VM</div><div className="loyalty-copy"><span/><strong/></div><div className="qr-grid">{Array.from({length:25}).map((_,i)=><i key={i}/>)}</div></div><div className="wallet-card"><span className="wallet-dot"/><div><b/><small/></div></div><div className="points-bubble">+500</div></div>;
+  return <div className="project-visual visual-commerce" aria-hidden="true"><div className="dash-window"><div className="window-bar"><span/><span/><span/></div><div className="dash-grid"><div className="dash-sidebar"><i/><i/><i/><i/></div><div className="dash-main"><div className="dash-head"><b/><span/></div><div className="kpi-row"><i/><i/><i/></div><div className="chart"><span/><span/><span/><span/><span/><span/></div></div></div></div><div className="floating-order">Live operations</div></div>;
+}
+
+function Home({ locale }: { locale: Locale }) {
+  const ar = locale === 'ar';
+  return <>
+    <section className="hero-modern"><div className="hero-glow glow-one"/><div className="hero-glow glow-two"/><div className="hero-inner">
+      <div className="status-chip"><span className="live-dot"/>{ar?'أبني وأوثّق باستمرار':'Building and documenting continuously'}</div>
+      <p className="hello">{ar?'أهلين، أنا عبدالعزيز 👋':'Hey, I’m Abdulaziz 👋'}</p>
+      <h1>{ar?<>أحوّل التقنية والـ AI إلى <span>أنظمة تشغيل</span> تصنع أثرًا حقيقيًا.</>:<>I turn technology and AI into <span>operating systems</span> that create real impact.</>}</h1>
+      <p className="hero-sub">{ar?'قائد في التحول الرقمي والعمليات التقنية، أبني أنظمة تربط التقنية والعمليات والبيانات بالنمو — من داخل العمل الفعلي، لا من بعيد.':'Digital Transformation & Technology Operations leader building systems that connect technology, operations, data, and growth — from inside real operations.'}</p>
+      <div className="hero-actions"><a className="btn btn-dark" href="#work">{ar?'شوف أعمالي':'View my work'} <ArrowLeft className="rtl-arrow" size={16}/></a><a className="btn btn-light" href="#about">{ar?'اعرف أكثر عني':'More about me'}</a></div>
+      <div className="hero-meta"><span>Digital Transformation</span><i/><span>Technology Operations</span><i/><span>AI & Automation</span></div>
+    </div></section>
+    <section className="projects-section" id="work"><div className="wrap"><div className="section-top modern-section-top"><div><span className="tiny-label">{ar?'أعمال مختارة':'Selected work'}</span><h2>{ar?'أنظمة بنيتها من مشاكل حقيقية.':'Systems built from real problems.'}</h2></div><p>{ar?'أعرض العمل كأنظمة وقرارات وتجارب، وليس كقائمة مهام وظيفية.':'I present the work as systems, decisions, and operating experience — not a responsibility list.'}</p></div><div className="project-stack">{projects[locale].map(project=><article className="project-card-modern" key={project.no}><ProjectVisual type={project.visual}/><div className="project-copy-modern"><div className="project-no">{project.no}</div><p className="project-kicker">{project.subtitle}</p><h3>{project.title}</h3><p className="project-desc">{project.body}</p><div className="tag-row">{project.tags.map(tag=><span key={tag}>{tag}</span>)}</div><a className="text-link" href="/work/">{ar?'تفاصيل العمل':'View work'} {ar?<ArrowUpLeft size={15}/>:<ArrowUpRight size={15}/>}</a></div></article>)}</div></div></section>
+    <section className="about-modern" id="about"><div className="wrap about-grid-modern"><div className="about-sticky"><span className="tiny-label">{ar?'عني':'About'}</span><h2>{ar?'أبني بين التقنية والتشغيل.':'I build between technology and operations.'}</h2></div><div className="about-story"><p className="about-lead">{ar?'عملي يبدأ من الواقع التشغيلي: أين يتعطل العمل؟ ما الذي لا يراه الفريق؟ أين تتكرر الأخطاء؟ ثم أحوّل هذه المشاكل إلى نظام أو منتج أو قرار أو أتمتة.':'My work starts in operating reality: where does work break, what can the team not see, where do errors repeat — then I turn those problems into systems, products, decisions, or automation.'}</p><p>{ar?'التجارة الرقمية هي أحد أقوى مختبراتي الحالية، لكنها ليست حدود هويتي. المظلة الأكبر هي التحول الرقمي والعمليات التقنية، مع امتداد في AI والأتمتة والمنتجات والبيانات.':'Digital commerce is one of my strongest current laboratories, but not the boundary of my identity. The wider umbrella is digital transformation and technology operations, extending into AI, automation, products, and data.'}</p><div className="principle-row"><span>Operator</span><span>Builder</span><span>Researcher</span><span>Writer</span></div></div></div></section>
+    <section className="expertise-modern"><div className="wrap"><div className="section-top modern-section-top"><div><span className="tiny-label">{ar?'مجالات التركيز':'Focus areas'}</span><h2>{ar?'خبرات تتقاطع بدل أن تعيش منفصلة.':'Capabilities that work together.'}</h2></div></div><div className="expertise-grid-modern">{expertise[locale].map(([no,title,body,Icon])=>{const IconComp=Icon as typeof Workflow;return <article className="expertise-card-modern" key={String(no)}><div className="expertise-head"><span>{String(no)}</span><IconComp size={22} strokeWidth={1.7}/></div><h3>{String(title)}</h3><p>{String(body)}</p></article>})}</div></div></section>
+    <section className="ideas-modern" id="ideas"><div className="wrap"><div className="section-top modern-section-top"><div><span className="tiny-label">{ar?'أفكار من الميدان':'Thinking from the field'}</span><h2>{ar?'أكتب عمّا أختبره وأبنيه.':'I write about what I test and build.'}</h2></div><a href="/writing/" className="text-link">{ar?'كل الكتابات':'All writing'} {ar?<ArrowUpLeft size={15}/>:<ArrowUpRight size={15}/>}</a></div><div className="idea-list-modern">{ideas[locale].map(([type,title],i)=><a href="/writing/" className="idea-row-modern" key={title}><span className="idea-no">0{i+1}</span><div><small>{type}</small><h3>{title}</h3></div><span className="idea-arrow">{ar?<ArrowUpLeft/>:<ArrowUpRight/>}</span></a>)}</div></div></section>
+    <section className="final-cta-modern"><div className="cta-glow"/><div className="wrap cta-inner-modern"><span className="tiny-label inverse">Abdulaziz Drde</span><h2>{ar?'التقنية ليست الهدف. النظام الذي يعمل هو الهدف.':'Technology is not the goal. A system that works is.'}</h2><p>{ar?'أبني، أختبر، أقيس، أوثّق — ثم أكرر.':'Build, test, measure, document — then repeat.'}</p><a className="btn btn-white" href="https://github.com/AbdulazizDrde" target="_blank" rel="noreferrer">GitHub <ArrowUpRight size={16}/></a></div></section>
+  </>;
+}
+
+const innerCopy: Record<Exclude<PageKey,'home'>,{ar:[string,string,string];en:[string,string,string]}> = {
+  work:{ar:['الأعمال','من المشكلة إلى النظام.','مشاريع وتجارب تشغيلية أوثق فيها السياق والقرار والتنفيذ والدروس، مع إبقاء البيانات الحساسة خاصة حتى اعتماد نشرها.'],en:['Work','From problem to system.','Projects and operating experiences documented through context, decision, execution, and lessons, while sensitive data remains private until approved for publication.']},
+  writing:{ar:['الكتابة','أفكار من داخل العمل.','مقالات وملاحظات وتحليلات تبدأ من تجربة أو بحث أو قرار فعلي، لا من جدول محتوى.'],en:['Writing','Ideas from inside the work.','Essays, field notes, and analysis grounded in actual experience, research, or decisions — not a content calendar.']},
+  'field-notes':{ar:['ملاحظات ميدانية','أوثّق العمل وهو حي.','المشكلة ← القرار ← السبب ← النتيجة ← التعلم.'],en:['Field Notes','Documenting work while it is alive.','Problem → Decision → Why → Result → Learning.']},
+  lab:{ar:['المختبر','مساحة البناء والاختبار.','نماذج أولية وأدوات داخلية وتجارب AI وأتمتة وواجهات تشغيلية.'],en:['Lab','A space to build and test.','Prototypes, internal tools, AI experiments, automation, and operational interfaces.']},
+  frameworks:{ar:['الأطر','الأنماط تستحق أسماءها بعد الدليل.','حالات ← أنماط متكررة ← إطار ← Playbook ← منتج.'],en:['Frameworks','Patterns earn names after evidence.','Cases → repeated patterns → framework → playbook → product.']},
+  about:{ar:['عني','أبني عند تقاطع التقنية والعمليات.','عبدالعزيز دردي — التحول الرقمي والعمليات التقنية، مع تركيز عملي على الأنظمة والمنتجات والبيانات والذكاء الاصطناعي.'],en:['About','Building at the intersection of technology and operations.','Abdulaziz Drde — Digital Transformation & Technology Operations, with practical focus across systems, products, data, and AI.']},
+};
 
 function InnerPage({page,locale}:{page:Exclude<PageKey,'home'>;locale:Locale}) {
-  const ar=locale==='ar';
-  if(page==='work') return <><PageHero page={page} locale={locale}/><section className='section'><div className='container'><WorkCards locale={locale}/></div></section></>;
-  if(page==='writing') return <><PageHero page={page} locale={locale}/><section className='section'><div className='container'><NoteRows locale={locale}/></div></section><section className='section'><div className='container two-col'><div className='sticky-label section-label'>{ar?'السياسة التحريرية':'Editorial standard'}</div><div className='prose'><h2>{ar?'السلطة تُستنتج من العمل، لا تُعلن.':'Authority is inferred from the work, not announced.'}</h2><p>{ar?'كل مادة يجب أن تميز بوضوح بين التجربة والقياس والملاحظة والبحث والفرضية.':'Every piece should make the difference between experience, measurement, observation, research, and hypothesis obvious.'}</p><div className='manifesto'>{ar?'AI يساعد العملية. لا يختلق التجربة.':'AI assists the process. It does not invent the experience.'}</div></div></div></section></>;
-  if(page==='field-notes') return <><PageHero page={page} locale={locale}/><section className='section'><div className='container two-col'><div className='sticky-label section-label'>{ar?'صيغة الملاحظة':'Field-note format'}</div><div className='prose'><h2>{ar?'المشكلة ← القرار ← السبب ← النتيجة ← التعلم':'Problem → Decision → Why → Result → Learning'}</h2><p>{ar?'الملاحظة الميدانية وحدة معرفة مرتبطة بواقعة عمل محددة ويمكن أن تنمو لاحقًا إلى تحليل أو دراسة حالة أو إطار.':'A field note is a knowledge unit tied to a specific piece of work, with the potential to grow into a deep dive, case study, or framework.'}</p><NoteRows locale={locale}/></div></div></section></>;
-  if(page==='lab') return <><PageHero page={page} locale={locale}/><section className='section'><div className='container'><TerritoryGrid locale={locale}/></div></section></>;
-  if(page==='frameworks') return <><PageHero page={page} locale={locale}/><section className='section'><div className='container two-col'><div className='sticky-label section-label'>{ar?'منهج الملكية الفكرية':'IP method'}</div><div className='prose'><h2>{ar?'لا نخترع إطارًا ثم نبحث له عن أدلة.':'We do not invent a framework and then search for evidence.'}</h2><p>{ar?'تبدأ الملكية الفكرية من العمل. عندما يظهر النمط نفسه عبر حالات متعددة يصبح من المشروع تسميته وتحويله إلى إطار قابل للاستخدام.':'Intellectual property starts with the work. When the same pattern appears across multiple cases, it earns a name and can become a reusable framework.'}</p></div></div></section></>;
-  return <><PageHero page='about' locale={locale}/><section className='section'><div className='container two-col'><div className='sticky-label section-label'>{ar?'النموذج':'The model'}</div><div className='prose'><h2>Operator × Builder × Researcher × Writer</h2><p>{ar?'الهدف ليس بناء صورة شخص يتحدث عن التقنية، بل توثيق شخص يشغّل ويبني ويبحث ثم يحول التجربة إلى معرفة قابلة للنقل.':'The goal is not to look like someone who talks about technology. It is to document the work of an operator who builds, researches, and turns experience into transferable knowledge.'}</p><div className='manifesto'>{ar?'أحوّل التقنية من أدوات متفرقة إلى أنظمة رقمية متكاملة ترفع كفاءة التشغيل وتحسن تجربة العميل وتدعم نمو الأعمال.':'I turn technology into integrated digital systems that improve operations, strengthen customer experience, and enable scalable business growth.'}</div></div></div></section></>;
+  const ar=locale==='ar'; const [label,title,body]=innerCopy[page][locale];
+  return <main className="inner-modern"><section className="inner-hero-modern"><div className="wrap"><span className="tiny-label">{label}</span><h1>{title}</h1><p>{body}</p></div></section>
+    {page==='work'&&<section className="projects-section inner-projects"><div className="wrap project-stack">{projects[locale].map(project=><article className="project-card-modern" key={project.no}><ProjectVisual type={project.visual}/><div className="project-copy-modern"><div className="project-no">{project.no}</div><p className="project-kicker">{project.subtitle}</p><h3>{project.title}</h3><p className="project-desc">{project.body}</p><div className="tag-row">{project.tags.map(tag=><span key={tag}>{tag}</span>)}</div></div></article>)}</div></section>}
+    {page==='writing'&&<section className="ideas-modern inner-ideas"><div className="wrap"><div className="idea-list-modern">{ideas[locale].map(([type,item],i)=><div className="idea-row-modern static" key={item}><span className="idea-no">0{i+1}</span><div><small>{type}</small><h3>{item}</h3></div><span className="status-soft">{ar?'قيد التطوير':'In development'}</span></div>)}</div><div className="editorial-note"><span>AI</span><p>{ar?'يساعد الذكاء الاصطناعي في البحث والتحليل والتنظيم والتحرير، لكنه لا يختلق تجربتي أو نتائجي أو مواقفي.':'AI can assist research, analysis, structure, and editing. It does not invent my experience, results, or opinions.'}</p></div></div></section>}
+    {page==='about'&&<section className="about-modern inner-about"><div className="wrap about-grid-modern"><div className="about-sticky"><span className="tiny-label">{ar?'النموذج':'The model'}</span><h2>Operator × Builder × Researcher × Writer</h2></div><div className="about-story"><p className="about-lead">{ar?'لا أريد أن تبدو هويتي كحساب يتحدث عن التقنية. أريدها أن توثّق شخصًا يشغّل ويبني ويبحث ثم يحوّل التجربة إلى معرفة قابلة للنقل.':'I do not want my identity to look like a profile that talks about technology. I want it to document an operator who builds, researches, and turns experience into transferable knowledge.'}</p><p>{ar?'الدليل قبل الادعاء. الأنظمة قبل الأدوات. الخبرة الميدانية قبل التجريد.':'Evidence before claims. Systems before tools. Field experience before abstraction.'}</p></div></div></section>}
+    {(page==='lab'||page==='frameworks'||page==='field-notes')&&<section className="minimal-cards-section"><div className="wrap expertise-grid-modern">{expertise[locale].map(([no,t,b,Icon])=>{const IconComp=Icon as typeof Workflow;return <article className="expertise-card-modern" key={String(no)}><div className="expertise-head"><span>{String(no)}</span><IconComp size={22}/></div><h3>{String(t)}</h3><p>{String(b)}</p></article>})}</div></section>}
+  </main>;
 }
 
-export function SitePage({page}:{page:PageKey}) {
-  const [locale,setLocale]=useState<Locale>('en');
-  useEffect(()=>{const saved=window.localStorage.getItem('abd-locale'); if(saved==='ar'||saved==='en') setLocale(saved);},[]);
-  useEffect(()=>{document.documentElement.lang=locale; document.documentElement.dir=locale==='ar'?'rtl':'ltr'; window.localStorage.setItem('abd-locale',locale);},[locale]);
-  return <><Seo page={page} locale={locale}/><Shell page={page} locale={locale} setLocale={setLocale}>{page==='home'?<Home locale={locale}/>:<InnerPage page={page} locale={locale}/>}</Shell></>;
+function Footer({locale}:{locale:Locale}) { const ar=locale==='ar'; return <footer className="footer-modern"><div className="wrap footer-inner-modern"><div><strong>{ar?'عبدالعزيز دردي':'Abdulaziz Drde'}</strong><p>Digital Transformation & Technology Operations</p></div><div className="footer-links-modern"><a href="/work/">{ar?'الأعمال':'Work'}</a><a href="/writing/">{ar?'الكتابة':'Writing'}</a><a href="https://github.com/AbdulazizDrde" target="_blank" rel="noreferrer">GitHub</a></div></div></footer>; }
+
+export function SitePage({ page }: { page: PageKey }) {
+  const [locale,setLocaleState]=useState<Locale>('ar');
+  useEffect(()=>{const saved=window.localStorage.getItem('abd-locale');if(saved==='ar'||saved==='en')setLocaleState(saved)},[]);
+  useEffect(()=>{document.documentElement.lang=locale;document.documentElement.dir=locale==='ar'?'rtl':'ltr';window.localStorage.setItem('abd-locale',locale)},[locale]);
+  return <><Seo page={page} locale={locale}/><Header locale={locale} setLocale={setLocaleState}/>{page==='home'?<Home locale={locale}/>:<InnerPage page={page} locale={locale}/>}<Footer locale={locale}/></>;
 }
